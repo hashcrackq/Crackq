@@ -2,17 +2,20 @@
 #
 # Vitaly Nikolenko
 # vnik@hashcrack.org
-# v0.1
+# v0.11
+
 import requests
 import json
 import sys
 import getopt
+import os
 
-######### CONFIGURATION ######### 
-API_KEY = 'YOUR API KEY HERE'
-#################################
-
-url = "http://hashcrack.org/crackq/v0.1/submit"
+SERVER = 'http://hashcrack.org'
+ENDPOINTS = {
+                'user_email' : '/crackq/v0.1/user_email',
+                'submit'     : '/crackq/v0.1/submit'
+            }
+API_KEY = None
 
 def usage(argv0):
     print '%s [-t|--type] md5|ntlm hash' % argv0
@@ -30,6 +33,38 @@ def validate_hash(_hash):
         return False
 
     return True
+
+def save_config():
+    global API_KEY
+
+    home_path = os.getenv("HOME")
+    sys.stdout.write('Enter your api key: ')
+    key = sys.stdin.readline().strip()
+
+    try:
+        conf = open(home_path + '/.crackq', 'w')
+    except IOError:
+        print 'Cannot write to %s' % home_path
+        sys.exit(-1)
+        
+    conf.write('key:%s\n' % key)
+    API_KEY = key
+
+def load_config():
+    global API_KEY
+
+    home_path = os.getenv("HOME")
+    try:
+        conf = open(home_path + '/.crackq', 'r')
+        for l in conf.readlines():
+            k, v = l.split(':')
+            if k == 'key':
+                API_KEY = v.strip()
+        if not API_KEY:
+            print 'api key is not found'
+            sys.exit(-1)
+    except IOError:
+        save_config()
 
 if __name__ == '__main__':
     _hash = None
@@ -62,11 +97,22 @@ if __name__ == '__main__':
         print 'Hash type is invalid'
         sys.exit(-1)
 
+    load_config()
+ 
     headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-    data = {'key': API_KEY, 'hash': _hash, 'type': _type}
+    data = {'key': API_KEY}
+    r = requests.post(SERVER + ENDPOINTS['user_email'], data=json.dumps(data), headers=headers)
 
-    r = requests.post(url, data=json.dumps(data), headers=headers)
+    if r.status_code != 200:
+        print 'There was an error retrieving user information.'
+        print r.json()['msg']
+        sys.exit(-1)
+
+    print 'Results will be emailed to %s' % r.json()['email']
+    data = {'key': API_KEY, 'hash': _hash, 'type': _type}
+    r = requests.post(SERVER + ENDPOINTS['submit'], data=json.dumps(data), headers=headers)
 
     if r.status_code != 201:
         print 'There was an error submitting the hash.'
+
     print r.json()['msg']
