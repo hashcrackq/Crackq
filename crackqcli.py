@@ -2,13 +2,15 @@
 #
 # Vitaly Nikolenko
 # vnik@hashcrack.org
-# v0.11
+# v0.12
 
 import requests
 import json
 import sys
 import getopt
 import os
+import zlib
+import base64
 
 SERVER = 'http://hashcrack.org'
 ENDPOINTS = {
@@ -18,8 +20,8 @@ ENDPOINTS = {
 API_KEY = None
 
 def usage(argv0):
-    print '%s [-t|--type] md5|ntlm hash' % argv0
-    print '-t --type        hash type, either md5 or ntlm'
+    print '%s [-t|--type] md5|ntlm|wpa2 hash|hccap' % argv0
+    print '-t --type        supported formats: md5, ntlm, or wpa/wpa2'
     print '-h --help        help'
 
 def validate_hash(_hash):
@@ -67,7 +69,6 @@ def load_config():
         save_config()
 
 if __name__ == '__main__':
-    _hash = None
     _type = None
 
     try:
@@ -88,15 +89,15 @@ if __name__ == '__main__':
        usage(sys.argv[0])
        sys.exit(-1)
 
-    _hash = args[0]
+    _content = args[0]
      
-    if not validate_hash(_hash):
-        sys.exit(-1)
-                
-    if not _type or (_type != 'ntlm' and _type != 'md5'):
-        print 'Hash type is invalid'
+    if not _type or (_type != 'ntlm' and _type != 'md5' and _type != 'wpa'):
+        print 'Type is invalid'
         sys.exit(-1)
 
+    if _type != 'wpa' and not validate_hash(_content):
+        sys.exit(-1)
+                
     load_config()
  
     headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
@@ -109,7 +110,23 @@ if __name__ == '__main__':
         sys.exit(-1)
 
     print 'Results will be emailed to %s' % r.json()['email']
-    data = {'key': API_KEY, 'hash': _hash, 'type': _type}
+
+    if _type == 'wpa':
+        try:
+            f = open(_content, 'r')
+        except IOError:
+            print 'Cannot find %s' % _fname
+            sys.exit(-1)
+
+        _content = base64.b64encode(zlib.compress(f.read()))
+        f.close()
+
+        if len(_content) > 1000:
+            print 'Is this the right file?'
+            sys.exit(-1)
+ 
+    data = {'key': API_KEY, 'content': _content, 'type': _type}
+
     r = requests.post(SERVER + ENDPOINTS['submit'], data=json.dumps(data), headers=headers)
 
     if r.status_code != 201:
