@@ -9,7 +9,9 @@ WPA/WPA2
 --------
 
 `$ wpaclean out.cap captured.cap`
+
 `$ aircrack-ng out.cap -J /tmp/tosubmit.hccap`
+
 `$ ./crackqcli.py -t wpa /tmp/tosubmit.hccap`
 
 MD5/NTLM
