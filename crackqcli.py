@@ -106,10 +106,10 @@ if __name__ == '__main__':
 
     if r.status_code != 200:
         print 'There was an error retrieving user information.'
-        print r.json['msg']
+        print r.json()['msg']
         sys.exit(-1)
 
-    print 'Results will be emailed to %s' % r.json['email']
+    print 'Results will be emailed to %s' % r.json()['email']
 
     if _type == 'wpa':
         try:
@@ -132,4 +132,4 @@ if __name__ == '__main__':
     if r.status_code != 201:
         print 'There was an error submitting the hash.'
 
-    print r.json['msg']
+    print r.json()['msg']
