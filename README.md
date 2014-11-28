@@ -3,7 +3,11 @@ Crackq Client
 
 Login to your account (http://hashcrack.org/login) to get the API key.
 
-Currently, the two supported formats are md5, ntlm and WPA/WPA2.
+Currently, the following algorithms are supported:
+
+* MD5
+* NTLM
+* WPA/WPA2
 
 WPA/WPA2
 --------
