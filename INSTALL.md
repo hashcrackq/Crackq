@@ -1,7 +1,7 @@
 Installation
 ============
 
-Update your "requests" library version if are getting the following error message:
+Update your "requests" library version if you are getting the following error message:
 
 Traceback (most recent call last):
   File "./crackqcli.py", line 113, in <module>

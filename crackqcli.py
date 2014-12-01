@@ -121,8 +121,8 @@ if __name__ == '__main__':
         _content = base64.b64encode(zlib.compress(f.read()))
         f.close()
 
-        if len(_content) > 1000:
-            print 'Is this the right file?'
+        if len(_content) > 392:
+            print 'Is this the right file? There should be a single essid per each hccap file.'
             sys.exit(-1)
  
     data = {'key': API_KEY, 'content': _content, 'type': _type}
