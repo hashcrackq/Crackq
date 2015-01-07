@@ -115,7 +115,7 @@ if __name__ == '__main__':
         try:
             f = open(_content, 'r')
         except IOError:
-            print 'Cannot find %s' % _fname
+            print 'Cannot find %s' % _content
             sys.exit(-1)
 
         _content = base64.b64encode(zlib.compress(f.read()))
