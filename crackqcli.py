@@ -20,7 +20,7 @@ ENDPOINTS = {
 API_KEY = None
 
 def usage(argv0):
-    print '%s [-t|--type] md5|ntlm|wpa2 hash|hccap' % argv0
+    print '%s [-t|--type] [md5|ntlm|wpa] [hash|hccap]' % argv0
     print '-t --type        supported formats: md5, ntlm, or wpa/wpa2'
     print '-h --help        help'
 
