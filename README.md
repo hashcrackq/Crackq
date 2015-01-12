@@ -1,7 +1,7 @@
 Crackq Client
 =============
 
-Login to your account (http://hashcrack.org/login) to get the API key.
+Login to your account (http://hashcrack.org/crackq) to get the API key.
 
 Currently, the following algorithms are supported:
 
