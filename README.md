@@ -14,7 +14,7 @@ WPA/WPA2
 
 `$ wpaclean out.cap captured.cap`
 
-`$ aircrack-ng out.cap -J /tmp/tosubmit.hccap`
+`$ aircrack-ng out.cap -J /tmp/tosubmit
 
 `$ ./crackqcli.py -t wpa /tmp/tosubmit.hccap`
 
