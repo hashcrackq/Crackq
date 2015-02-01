@@ -2,7 +2,7 @@
 #
 # Vitaly Nikolenko
 # vnik@hashcrack.org
-# v0.12
+# v0.13
 
 import requests
 import json
@@ -20,8 +20,8 @@ ENDPOINTS = {
 API_KEY = None
 
 def usage(argv0):
-    print '%s [-t|--type] [md5|ntlm|wpa] [hash|hccap]' % argv0
-    print '-t --type        supported formats: md5, ntlm, or wpa/wpa2'
+    print '%s [-t|--type] [md5|ntlm|lm|wpa] [hash|hccap]' % argv0
+    print '-t --type        supported formats: md5, ntlm, lm or wpa/wpa2'
     print '-h --help        help'
 
 def validate_hash(_hash):
@@ -91,7 +91,7 @@ if __name__ == '__main__':
 
     _content = args[0]
      
-    if not _type or (_type != 'ntlm' and _type != 'md5' and _type != 'wpa'):
+    if not _type or (_type != 'ntlm' and _type != 'md5' and _type != 'lm' and _type != 'wpa'):
         print 'Type is invalid'
         sys.exit(-1)
 
