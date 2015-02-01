@@ -6,6 +6,7 @@ Login to your account (http://hashcrack.org/crackq) to get the API key.
 Currently, the following algorithms are supported:
 
 * MD5
+* LM
 * NTLM
 * WPA/WPA2
 
@@ -18,7 +19,15 @@ WPA/WPA2
 
 `$ ./crackqcli.py -t wpa /tmp/tosubmit.hccap`
 
-MD5/NTLM
---------
+MD5/LM/NTLM
+-----------
 
 `$ ./crackqcli.py -t md5 06aa3b7d55df43e7d7fa4aef94811e4a`
+
+`$ ./crackqcli.py -t ntlm ab54d7ae46a72b05388ec24611c96a2d`
+
+The LM hash is submitted as 32 hex-char value, i.e., two halves of the password:
+ 
+`$ ./crackqcli.py -t lm f6dc2e4c788de157ff17365faf1ffe89`
+
+For more information regarding LM hashes refer to the [Crackq FAQ](http://hashcrack.org/crackq_faq)
