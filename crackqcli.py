@@ -2,15 +2,15 @@
 #
 # Vitaly Nikolenko
 # vnik@hashcrack.org
-# v0.13
+# v0.14
 
-import requests
 import json
 import sys
 import getopt
 import os
 import zlib
 import base64
+from urllib2 import Request, urlopen, URLError, HTTPError
 
 SERVER = 'http://hashcrack.org'
 ENDPOINTS = {
@@ -19,19 +19,22 @@ ENDPOINTS = {
             }
 API_KEY = None
 
+def banner():
+    sys.stdout.write('hashcrack.org crackq client v0.14\n\n')
+
 def usage(argv0):
     print '%s [-t|--type] [md5|ntlm|lm|wpa] [hash|hccap]' % argv0
-    print '-t --type        supported formats: md5, ntlm, lm or wpa/wpa2'
+    print '-t --type        supported formats: md5, ntlm, lm or wpa'
     print '-h --help        help'
 
 def validate_hash(_hash):
     if len(_hash) != 32:
-        print 'Invalid hash'
+	sys.stdout.write('[-] ERROR: Invalid hash\n')
         return False
     try:
         int(_hash, 16)
     except ValueError:
-        print 'The hash is not in hex'
+	sys.stdout.write('[-] ERROR: The hash is not in hex\n')
         return False
 
     return True
@@ -40,13 +43,13 @@ def save_config():
     global API_KEY
 
     home_path = os.getenv("HOME")
-    sys.stdout.write('Enter your api key: ')
+    sys.stdout.write('Enter your API key: ')
     key = sys.stdin.readline().strip()
 
     try:
         conf = open(home_path + '/.crackq', 'w')
     except IOError:
-        print 'Cannot write to %s' % home_path
+	sys.stdout.write('[-] ERROR: Cannot write to %s\n' % home_path)
         sys.exit(-1)
         
     conf.write('key:%s\n' % key)
@@ -63,14 +66,14 @@ def load_config():
             if k == 'key':
                 API_KEY = v.strip()
         if not API_KEY:
-            print 'api key is not found'
+	    sys.stdout.write('[-] ERROR: API key is not found\n')
             sys.exit(-1)
     except IOError:
         save_config()
 
 if __name__ == '__main__':
     _type = None
-
+    banner()
     try:
         optlist, args = getopt.getopt(sys.argv[1:], 't:h', ['type=', 'help'])
     except getopt.GetoptError as err:
@@ -92,7 +95,7 @@ if __name__ == '__main__':
     _content = args[0]
      
     if not _type or (_type != 'ntlm' and _type != 'md5' and _type != 'lm' and _type != 'wpa'):
-        print 'Type is invalid'
+	sys.stdout.write('[-] ERROR: INVALID HASH TYPE\n')
         sys.exit(-1)
 
     if _type != 'wpa' and not validate_hash(_content):
@@ -100,36 +103,53 @@ if __name__ == '__main__':
                 
     load_config()
  
-    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-    data = {'key': API_KEY}
-    r = requests.post(SERVER + ENDPOINTS['user_email'], data=json.dumps(data), headers=headers)
+    try:
+        headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+        data = {'key': API_KEY}
 
-    if r.status_code != 200:
-        print 'There was an error retrieving user information.'
-        print r.json()['msg']
-        sys.exit(-1)
+	sys.stdout.write('[+] Retrieving email...\n')
+        req = Request(SERVER + ENDPOINTS['user_email'])
+        req.add_header('Content-Type', 'application/json')
+        res = urlopen(req, json.dumps(data))
+	sys.stdout.write('[+] Results will be emailed to: %s\n' % json.load(res)['email'])
+    except HTTPError as e:
+	if e.code == 400:
+	    sys.stdout.write('[-] ERROR: HTTP %d - MALFORMED REQUEST\n' % e.code)
+	if e.code == 401:
+	    sys.stdout.write('[-] ERROR: HTTP %d - INVALID API KEY\n' % e.code)
+	sys.exit(-1)
+    except URLError as e:
+	sys.stdout.write('[-] ERROR: UNREACHABLE - %s\n' % e.reason)
+	sys.exit(-1)
 
-    print 'Results will be emailed to %s' % r.json()['email']
-
-    if _type == 'wpa':
-        try:
-            f = open(_content, 'r')
-        except IOError:
-            print 'Cannot find %s' % _content
-            sys.exit(-1)
-
-        _content = base64.b64encode(zlib.compress(f.read()))
-        f.close()
-
-        if len(_content) > 392:
-            print 'Is this the right file? There should be a single essid per each hccap file.'
-            sys.exit(-1)
- 
-    data = {'key': API_KEY, 'content': _content, 'type': _type}
-
-    r = requests.post(SERVER + ENDPOINTS['submit'], data=json.dumps(data), headers=headers)
-
-    if r.status_code != 201:
-        print 'There was an error submitting the hash.'
-
-    print r.json()['msg']
+    try:
+        if _type == 'wpa':
+            try:
+                f = open(_content, 'r')
+            except IOError:
+		sys.stdout.write('[-] ERROR: Cannot find %s\n' % _content)
+                sys.exit(-1)
+    
+            _content = base64.b64encode(zlib.compress(f.read()))
+            f.close()
+    
+            if len(_content) > 392:
+		sys.stdout.write('[-] ERROR: Not a hccap file or multiple essids detected\n')
+                sys.exit(-1)
+     
+	sys.stdout.write('[+] Sending the hash...\n')
+        data = {'key': API_KEY, 'content': _content, 'type': _type}
+	print data
+        req = Request(SERVER + ENDPOINTS['submit'])
+        req.add_header('Content-Type', 'application/json')
+        res = urlopen(req, json.dumps(data))
+        sys.stdout.write('[+] Done\n') 
+    except HTTPError as e:
+	if e.code == 400:
+	    sys.stdout.write('[-] ERROR: HTTP %d - MALFORMED REQUEST OR UNSUPPORTED HASH TYPE\n' % e.code)
+	if e.code == 401:
+	    sys.stdout.write('[-] ERROR: HTTP %d - INVALID API KEY OR QUOTA IS EXCEEDED\n' % e.code)
+	sys.exit(-1)
+    except URLError as e:
+	sys.stdout.write('[-] ERROR: UNREACHABLE - %s\n' % e.reason)
+	sys.exit(-1)
