@@ -2,7 +2,7 @@
 #
 # Vitaly Nikolenko
 # vnik@hashcrack.org
-# v0.14
+# v0.15b
 
 import json
 import sys
@@ -12,7 +12,7 @@ import zlib
 import base64
 from urllib2 import Request, urlopen, URLError, HTTPError
 
-SERVER = 'http://hashcrack.org'
+SERVER = 'https://hashcrack.org'
 ENDPOINTS = {
                 'user_email' : '/crackq/v0.1/user_email',
                 'submit'     : '/crackq/v0.1/submit'
@@ -20,7 +20,7 @@ ENDPOINTS = {
 API_KEY = None
 
 def banner():
-    sys.stdout.write('hashcrack.org crackq client v0.14\n\n')
+    sys.stdout.write('hashcrack.org crackq client v0.15b\n\n')
 
 def usage(argv0):
     print '%s [-t|--type] [md5|ntlm|lm|wpa] [hash|hccap]' % argv0
@@ -112,17 +112,7 @@ if __name__ == '__main__':
         req.add_header('Content-Type', 'application/json')
         res = urlopen(req, json.dumps(data))
 	sys.stdout.write('[+] Results will be emailed to: %s\n' % json.load(res)['email'])
-    except HTTPError as e:
-	if e.code == 400:
-	    sys.stdout.write('[-] ERROR: HTTP %d - MALFORMED REQUEST\n' % e.code)
-	if e.code == 401:
-	    sys.stdout.write('[-] ERROR: HTTP %d - INVALID API KEY\n' % e.code)
-	sys.exit(-1)
-    except URLError as e:
-	sys.stdout.write('[-] ERROR: UNREACHABLE - %s\n' % e.reason)
-	sys.exit(-1)
 
-    try:
         if _type == 'wpa':
             try:
                 f = open(_content, 'r')
@@ -139,16 +129,12 @@ if __name__ == '__main__':
      
 	sys.stdout.write('[+] Sending the hash...\n')
         data = {'key': API_KEY, 'content': _content, 'type': _type}
-	print data
         req = Request(SERVER + ENDPOINTS['submit'])
         req.add_header('Content-Type', 'application/json')
         res = urlopen(req, json.dumps(data))
         sys.stdout.write('[+] Done\n') 
     except HTTPError as e:
-	if e.code == 400:
-	    sys.stdout.write('[-] ERROR: HTTP %d - MALFORMED REQUEST OR UNSUPPORTED HASH TYPE\n' % e.code)
-	if e.code == 401:
-	    sys.stdout.write('[-] ERROR: HTTP %d - INVALID API KEY OR QUOTA IS EXCEEDED\n' % e.code)
+	sys.stdout.write('[-] ERROR: HTTP %d - %s\n' % (e.code, json.load(e)['msg']))
 	sys.exit(-1)
     except URLError as e:
 	sys.stdout.write('[-] ERROR: UNREACHABLE - %s\n' % e.reason)
