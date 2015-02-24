@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 #
-# Vitaly Nikolenko
-# vnik@hashcrack.org
-# v0.15b
+# support@hashcrack.org
+# v0.16b
 
 import json
 import sys
@@ -20,11 +19,12 @@ ENDPOINTS = {
 API_KEY = None
 
 def banner():
-    sys.stdout.write('hashcrack.org crackq client v0.15b\n\n')
+    sys.stdout.write('hashcrack.org crackq client v0.16b\n\n')
 
 def usage(argv0):
-    print '%s [-t|--type] [md5|ntlm|lm|wpa] [hash|hccap]' % argv0
+    print '%s [-privq] [-t|--type] [md5|ntlm|lm|wpa] [hash|hccap]' % argv0
     print '-t --type        supported formats: md5, ntlm, lm or wpa'
+    print '-privq           submit to the private queue' 
     print '-h --help        help'
 
 def validate_hash(_hash):
@@ -66,16 +66,19 @@ def load_config():
             if k == 'key':
                 API_KEY = v.strip()
         if not API_KEY:
-	    sys.stdout.write('[-] ERROR: API key is not found\n')
+	    sys.stdout.write('[-] ERROR: API KEY NOT FOUND\n')
             sys.exit(-1)
     except IOError:
         save_config()
 
 if __name__ == '__main__':
     _type = None
+    qtype = 'pubq'
+
     banner()
+
     try:
-        optlist, args = getopt.getopt(sys.argv[1:], 't:h', ['type=', 'help'])
+        optlist, args = getopt.getopt(sys.argv[1:], 't:h:privq', ['type=', 'help'])
     except getopt.GetoptError as err:
         print str(err)
         usage(sys.argv[0])
@@ -87,6 +90,8 @@ if __name__ == '__main__':
            sys.exit()
        if o in ('-t', '--type'):
            _type = a
+       if o == '-privq':
+           qtype = 'privq'
 
     if len(args) != 1:
        usage(sys.argv[0])
@@ -120,15 +125,16 @@ if __name__ == '__main__':
 		sys.stdout.write('[-] ERROR: Cannot find %s\n' % _content)
                 sys.exit(-1)
     
-            _content = base64.b64encode(zlib.compress(f.read()))
-            f.close()
-    
-            if len(_content) > 392:
-		sys.stdout.write('[-] ERROR: Not a hccap file or multiple essids detected\n')
+            _raw = f.read()
+            if len(_raw) != 392:
+		sys.stdout.write('[-] ERROR: hccap file is invalid or multiple essids detected\n')
                 sys.exit(-1)
+
+            _content = base64.b64encode(zlib.compress(_raw))
+            f.close()
      
 	sys.stdout.write('[+] Sending the hash...\n')
-        data = {'key': API_KEY, 'content': _content, 'type': _type}
+	data = {'key': API_KEY, 'content': _content, 'type': _type, 'q': qtype}
         req = Request(SERVER + ENDPOINTS['submit'])
         req.add_header('Content-Type', 'application/json')
         res = urlopen(req, json.dumps(data))
