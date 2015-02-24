@@ -22,9 +22,9 @@ def banner():
     sys.stdout.write('hashcrack.org crackq client v0.16b\n\n')
 
 def usage(argv0):
-    print '%s [-privq] [-t|--type] [md5|ntlm|lm|wpa] [hash|hccap]' % argv0
+    print '%s [-q privq|pubq] [-t|--type] [md5|ntlm|lm|wpa] [hash|hccap]' % argv0
     print '-t --type        supported formats: md5, ntlm, lm or wpa'
-    print '-privq           submit to the private queue' 
+    print '-q               queue type: pubq or privq' 
     print '-h --help        help'
 
 def validate_hash(_hash):
@@ -78,7 +78,7 @@ if __name__ == '__main__':
     banner()
 
     try:
-        optlist, args = getopt.getopt(sys.argv[1:], 't:h:privq', ['type=', 'help'])
+        optlist, args = getopt.getopt(sys.argv[1:], 't:hq:', ['type=', 'help'])
     except getopt.GetoptError as err:
         print str(err)
         usage(sys.argv[0])
@@ -90,8 +90,11 @@ if __name__ == '__main__':
            sys.exit()
        if o in ('-t', '--type'):
            _type = a
-       if o == '-privq':
-           qtype = 'privq'
+       if o == '-q':
+	   if a not in ('pubq', 'privq'):
+	       sys.stdout.write('[-] ERROR: INVALID QUEUE TYPE\n')
+	       sys.exit(-1)
+           qtype = a
 
     if len(args) != 1:
        usage(sys.argv[0])
@@ -133,7 +136,11 @@ if __name__ == '__main__':
             _content = base64.b64encode(zlib.compress(_raw))
             f.close()
      
-	sys.stdout.write('[+] Sending the hash...\n')
+        if qtype == 'pubq':
+	    sys.stdout.write('[+] Sending to public queue...\n')
+	else:
+	    sys.stdout.write('[+] Sending to private queue...\n')
+
 	data = {'key': API_KEY, 'content': _content, 'type': _type, 'q': qtype}
         req = Request(SERVER + ENDPOINTS['submit'])
         req.add_header('Content-Type', 'application/json')
