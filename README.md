@@ -8,16 +8,23 @@ Currently, the following algorithms are supported:
 * MD5
 * LM
 * NTLM
-* WPA/WPA2
+* WPA / WPA2
+* DESCRYPT / DES(Unix) 
 
 WPA/WPA2
 --------
+
+To submit your your handshake to the private queue:
 
 `$ wpaclean out.cap captured.cap`
 
 `$ aircrack-ng out.cap -J /tmp/tosubmit`
 
 `$ ./crackqcli.py -t wpa /tmp/tosubmit.hccap`
+
+The private queue submission is similar except for the `-q privq` switch:
+
+`$ ./crackqcli.py -q privq -t wpa /tmp/tosubmit.hccap`
 
 MD5/LM/NTLM
 -----------
@@ -31,3 +38,10 @@ The LM hash is submitted as 32 hex-char value, i.e., two halves of the password:
 `$ ./crackqcli.py -t lm f6dc2e4c788de157ff17365faf1ffe89`
 
 For more information regarding LM hashes refer to the [Crackq FAQ](http://hashcrack.org/crackq_faq)
+
+DESCRYPT/DES(Unix)
+------------------
+
+DES-based Unix crypt algorithm is only supported by the private queue:
+
+`$ ./crackqcli.py -q privq -t descrypt ffTEQtUBN6Glk`

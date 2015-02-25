@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # support@hashcrack.org
-# v0.16b
+# v0.17
 
 import json
 import sys
@@ -9,6 +9,7 @@ import getopt
 import os
 import zlib
 import base64
+import re
 from urllib2 import Request, urlopen, URLError, HTTPError
 
 SERVER = 'https://hashcrack.org'
@@ -17,25 +18,31 @@ ENDPOINTS = {
                 'submit'     : '/crackq/v0.1/submit'
             }
 API_KEY = None
+PRIVQ_HASH_TYPES = ['wpa', 'descrypt']
+PUBQ_HASH_TYPES  = ['lm', 'ntlm', 'md5', 'wpa']
 
 def banner():
-    sys.stdout.write('hashcrack.org crackq client v0.16b\n\n')
+    sys.stdout.write('hashcrack.org crackq client v0.17\n\n')
 
 def usage(argv0):
-    print '%s [-q privq|pubq] [-t|--type] [md5|ntlm|lm|wpa] [hash|hccap]' % argv0
-    print '-t --type        supported formats: md5, ntlm, lm or wpa'
+    print '%s [-q privq|pubq] [-t|--type] [md5|ntlm|lm|wpa|descrypt] [hash|hccap]' % argv0
+    print '-t --type        supported formats: md5, ntlm, lm, wpa or descrypt'
     print '-q               queue type: pubq or privq' 
     print '-h --help        help'
 
-def validate_hash(_hash):
-    if len(_hash) != 32:
-	sys.stdout.write('[-] ERROR: Invalid hash\n')
-        return False
-    try:
-        int(_hash, 16)
-    except ValueError:
-	sys.stdout.write('[-] ERROR: The hash is not in hex\n')
-        return False
+def validate_hash(_hash, _hash_type):
+    if _hash_type == 'descrypt':
+       if re.match('^[\.0-9A-Za-z]{13,13}$', _hash) is None:
+           return False
+    else:
+        if len(_hash) != 32:
+            sys.stdout.write('[-] ERROR: Invalid hash\n')
+            return False
+        try:
+            int(_hash, 16)
+        except ValueError:
+            sys.stdout.write('[-] ERROR: The hash is not in hex\n')
+            return False
 
     return True
 
@@ -102,11 +109,19 @@ if __name__ == '__main__':
 
     _content = args[0]
      
-    if not _type or (_type != 'ntlm' and _type != 'md5' and _type != 'lm' and _type != 'wpa'):
+    if not _type or (_type != 'ntlm' and _type != 'md5' and _type != 'lm' and _type != 'wpa' and _type != 'descrypt'):
 	sys.stdout.write('[-] ERROR: INVALID HASH TYPE\n')
         sys.exit(-1)
 
-    if _type != 'wpa' and not validate_hash(_content):
+    if qtype == 'privq' and _type not in PRIVQ_HASH_TYPES:
+	sys.stdout.write('[-] ERROR: NOT SUPPORTED BY PRIVQ\n')
+        sys.exit(-1)
+
+    if qtype == 'pubq' and _type not in PUBQ_HASH_TYPES:
+	sys.stdout.write('[-] ERROR: NOT SUPPORTED BY PUBQ\n')
+        sys.exit(-1)
+
+    if _type != 'wpa' and not validate_hash(_content, _type):
         sys.exit(-1)
                 
     load_config()
