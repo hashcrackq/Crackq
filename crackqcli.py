@@ -18,7 +18,7 @@ ENDPOINTS = {
                 'submit'     : '/crackq/v0.1/submit'
             }
 API_KEY = None
-PRIVQ_HASH_TYPES = ['wpa', 'descrypt']
+PRIVQ_HASH_TYPES = ['wpa', 'descrypt', 'md5crypt']
 PUBQ_HASH_TYPES  = ['lm', 'ntlm', 'md5', 'wpa']
 
 def banner():
@@ -32,7 +32,10 @@ def usage(argv0):
 
 def validate_hash(_hash, _hash_type):
     if _hash_type == 'descrypt':
-       if re.match('^[\.0-9A-Za-z]{13,13}$', _hash) is None:
+       if re.match('^[\./0-9A-Za-z]{13,13}$', _hash) is None:
+           return False
+    elif _hash_type == 'md5crypt':
+       if re.match('^\$1\$[\./0-9A-Za-z]{0,8}\$[\./0-9A-Za-z]{22,22}$', _hash) is None:
            return False
     else:
         if len(_hash) != 32:
@@ -109,7 +112,7 @@ if __name__ == '__main__':
 
     _content = args[0]
      
-    if not _type or (_type != 'ntlm' and _type != 'md5' and _type != 'lm' and _type != 'wpa' and _type != 'descrypt'):
+    if not _type or (_type not in PRIVQ_HASH_TYPES and _type not in PUBQ_HASH_TYPES):
 	sys.stdout.write('[-] ERROR: INVALID HASH TYPE\n')
         sys.exit(-1)
 
