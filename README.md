@@ -10,6 +10,7 @@ Currently, the following algorithms are supported:
 * NTLM
 * WPA / WPA2
 * DESCRYPT / DES(Unix) 
+* MD5CRYPT / MD5(Unix) 
 
 WPA/WPA2
 --------
@@ -42,6 +43,13 @@ For more information regarding LM hashes refer to the [Crackq FAQ](http://hashcr
 DESCRYPT/DES(Unix)
 ------------------
 
-DES-based Unix crypt algorithm is only supported by the private queue:
+DES-based Unix crypt algorithm is supported by the private queue only:
 
 `$ ./crackqcli.py -q privq -t descrypt ffTEQtUBN6Glk`
+
+MD5CRYPT/MD5(Unix)
+------------------
+
+MD5-based Unix crypt algorithm is supported by the private queue only:
+
+`$ ./crackqcli.py -q privq -t descrypt '$1$abcdefgh$WSwV3CmjYt3iE5AlESn9Z.'`
