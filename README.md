@@ -52,4 +52,4 @@ MD5CRYPT/MD5(Unix)
 
 MD5-based Unix crypt algorithm is supported by the private queue only:
 
-`$ ./crackqcli.py -q privq -t descrypt '$1$abcdefgh$WSwV3CmjYt3iE5AlESn9Z.'`
+`$ ./crackqcli.py -q privq -t md5crypt '$1$abcdefgh$WSwV3CmjYt3iE5AlESn9Z.'`
