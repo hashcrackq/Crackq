@@ -18,7 +18,7 @@ ENDPOINTS = {
                 'submit'     : '/crackq/v0.1/submit'
             }
 API_KEY = None
-PRIVQ_HASH_TYPES = ['wpa', 'descrypt', 'md5crypt', 'md5']
+PRIVQ_HASH_TYPES = ['wpa', 'descrypt', 'md5crypt', 'md5', 'ntlm']
 PUBQ_HASH_TYPES  = ['lm', 'ntlm', 'md5', 'wpa']
 
 def banner():
