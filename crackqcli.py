@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # support@hashcrack.org
-# v0.17
+# v0.18b
 
 import json
 import sys
@@ -19,14 +19,14 @@ ENDPOINTS = {
             }
 API_KEY = None
 PRIVQ_HASH_TYPES = ['wpa', 'descrypt', 'md5crypt', 'md5', 'ntlm']
-PUBQ_HASH_TYPES  = ['lm', 'ntlm', 'md5', 'wpa']
+PUBQ_HASH_TYPES  = ['lm', 'ntlm', 'md5', 'wpa', 'gpp', 'cisco_type7']
 
 def banner():
-    sys.stdout.write('hashcrack.org crackq client v0.17\n\n')
+    sys.stdout.write('hashcrack.org crackq client v0.18b\n\n')
 
 def usage(argv0):
-    print '%s [-q privq|pubq] [-t|--type] [md5|ntlm|lm|wpa|descrypt] [hash|hccap]' % argv0
-    print '-t --type        supported formats: md5, ntlm, lm, wpa or descrypt'
+    print '%s [-q privq|pubq] [-t|--type] [md5|ntlm|lm|gpp|cisco_type7|wpa|md5crypt|descrypt] [hash|hccap]' % argv0
+    print '-t --type        supported formats: md5, ntlm, lm, gpp, wpa, md5crypt or descrypt'
     print '-q               queue type: pubq or privq' 
     print '-h --help        help'
 
@@ -36,6 +36,19 @@ def validate_hash(_hash, _hash_type):
            return False
     elif _hash_type == 'md5crypt':
        if re.match('^\$1\$[\./0-9A-Za-z]{0,8}\$[\./0-9A-Za-z]{22,22}$', _hash) is None:
+           return False
+    elif _hash_type == 'cisco_type7':
+       if re.match('^[0-9][0-9][0-9A-Fa-f]+$', _hash) is None:
+           return False
+    elif _hash_type == 'gpp':
+       #if len(_hash) != 43:
+       #    return False
+       # pad it if needed
+       base64str_pad=_hash + (4 - len(_hash)%4) * '='
+       try:
+           cpassword = base64.b64decode(base64str_pad)
+       except TypeError:
+           print 'error'
            return False
     else:
         if len(_hash) != 32:
@@ -137,7 +150,23 @@ if __name__ == '__main__':
         req = Request(SERVER + ENDPOINTS['user_email'])
         req.add_header('Content-Type', 'application/json')
         res = urlopen(req, json.dumps(data))
-	sys.stdout.write('[+] Results will be emailed to: %s\n' % json.load(res)['email'])
+        data = json.load(res)
+	sys.stdout.write('[+] Results will be emailed to: %s\n' % data['email'])
+	sys.stdout.write('[+] Public queue submissions left: %s\n' % data['pubq_limit'])
+	sys.stdout.write('[+] Private queue submissions left: %s\n' % data['privq_limit'])
+
+        if qtype == 'pubq':
+            if (data['pubq_limit'] > 0):
+	        sys.stdout.write('[+] Sending to public queue...\n')
+            else:
+	        sys.stdout.write('[-] ERROR: NO PUBLIC QUEUE SUBMISSIONS LEFT\n')
+                sys.exit(-1)
+	else:
+            if (data['privq_limit'] > 0):
+	        sys.stdout.write('[+] Sending to private queue...\n')
+            else:
+	        sys.stdout.write('[-] ERROR: NO PRIVATE QUEUE SUBMISSIONS LEFT\n')
+                sys.exit(-1)
 
         if _type == 'wpa':
             try:
@@ -154,11 +183,6 @@ if __name__ == '__main__':
             _content = base64.b64encode(zlib.compress(_raw))
             f.close()
      
-        if qtype == 'pubq':
-	    sys.stdout.write('[+] Sending to public queue...\n')
-	else:
-	    sys.stdout.write('[+] Sending to private queue...\n')
-
 	data = {'key': API_KEY, 'content': _content, 'type': _type, 'q': qtype}
         req = Request(SERVER + ENDPOINTS['submit'])
         req.add_header('Content-Type', 'application/json')
