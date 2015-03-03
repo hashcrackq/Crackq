@@ -26,7 +26,7 @@ def banner():
 
 def usage(argv0):
     print '%s [-q privq|pubq] [-t|--type] [md5|ntlm|lm|gpp|cisco_type7|wpa|md5crypt|descrypt] [hash|hccap]' % argv0
-    print '-t --type        supported formats: md5, ntlm, lm, gpp, wpa, md5crypt or descrypt'
+    print '-t --type        supported formats: md5, ntlm, lm, gpp, cisco_type7, wpa, md5crypt or descrypt'
     print '-q               queue type: pubq or privq' 
     print '-h --help        help'
 
@@ -41,14 +41,11 @@ def validate_hash(_hash, _hash_type):
        if re.match('^[0-9][0-9][0-9A-Fa-f]+$', _hash) is None:
            return False
     elif _hash_type == 'gpp':
-       #if len(_hash) != 43:
-       #    return False
        # pad it if needed
        base64str_pad=_hash + (4 - len(_hash)%4) * '='
        try:
            cpassword = base64.b64decode(base64str_pad)
        except TypeError:
-           print 'error'
            return False
     else:
         if len(_hash) != 32:
@@ -138,6 +135,7 @@ if __name__ == '__main__':
         sys.exit(-1)
 
     if _type != 'wpa' and not validate_hash(_content, _type):
+	sys.stdout.write('[-] ERROR: INVALID HASH FORMAT\n')
         sys.exit(-1)
                 
     load_config()
