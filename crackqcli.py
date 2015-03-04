@@ -18,15 +18,15 @@ ENDPOINTS = {
                 'submit'     : '/crackq/v0.1/submit'
             }
 API_KEY = None
-PRIVQ_HASH_TYPES = ['wpa', 'descrypt', 'md5crypt', 'md5', 'ntlm']
+PRIVQ_HASH_TYPES = ['wpa', 'descrypt', 'md5crypt', 'md5', 'ntlm', 'sha1']
 PUBQ_HASH_TYPES  = ['lm', 'ntlm', 'md5', 'wpa', 'gpp', 'cisco_type7']
 
 def banner():
     sys.stdout.write('hashcrack.org crackq client v0.18b\n\n')
 
 def usage(argv0):
-    print '%s [-q privq|pubq] [-t|--type] [md5|ntlm|lm|gpp|cisco_type7|wpa|md5crypt|descrypt] [hash|hccap]' % argv0
-    print '-t --type        supported formats: md5, ntlm, lm, gpp, cisco_type7, wpa, md5crypt or descrypt'
+    print '%s [-q privq|pubq] [-t|--type] [md5|ntlm|lm|gpp|sha1|cisco_type7|wpa|md5crypt|descrypt] [hash|hccap]' % argv0
+    print '-t --type        supported formats: md5, ntlm, lm, gpp, sha1, cisco_type7, wpa, md5crypt or descrypt'
     print '-q               queue type: pubq or privq' 
     print '-u --update      update the client' 
     print '-h --help        help'
@@ -41,6 +41,15 @@ def validate_hash(_hash, _hash_type):
     elif _hash_type == 'cisco_type7':
        if re.match('^[0-9][0-9][0-9A-Fa-f]+$', _hash) is None:
            return False
+    elif _hash_type == 'sha1':
+        if len(_hash) != 40:
+            sys.stdout.write('[-] ERROR: Invalid hash\n')
+            return False
+        try:
+            int(_hash, 16)
+        except ValueError:
+            sys.stdout.write('[-] ERROR: The hash is not in hex\n')
+            return False
     elif _hash_type == 'gpp':
        # pad it if needed
        base64str_pad=_hash + (4 - len(_hash)%4) * '='
@@ -57,7 +66,6 @@ def validate_hash(_hash, _hash_type):
         except ValueError:
             sys.stdout.write('[-] ERROR: The hash is not in hex\n')
             return False
-
     return True
 
 def save_config():

@@ -6,6 +6,7 @@ Login to your account (http://hashcrack.org/crackq) to get the API key.
 Currently, the following algorithms are supported:
 
 * MD5
+* SHA1
 * LM
 * NTLM
 * WPA / WPA2
@@ -29,8 +30,8 @@ The private queue submission is similar except for the `-q privq` switch:
 
 `$ ./crackqcli.py -q privq -t wpa /tmp/tosubmit.hccap`
 
-MD5/LM/NTLM
------------
+MD5/SHA1/NTLM
+-------------
 
 `$ ./crackqcli.py -t md5 06aa3b7d55df43e7d7fa4aef94811e4a`
 
@@ -41,6 +42,13 @@ To submit to the private queue, use the `-q privq` switch:
 `$ ./crackqcli.py -q privq -t md5 06aa3b7d55df43e7d7fa4aef94811e4a`
 
 `$ ./crackqcli.py -q privq -t ntlm ab54d7ae46a72b05388ec24611c96a2d`
+
+SHA1 hashes (40 hex chars) are supported by the private queue only:
+
+`$ ./crackqcli.py -q privq -t sha1 35029a2e592be14756b3bd91fbf873d9e2885713`
+
+LM
+--
 
 The LM hash is submitted as 32 hex-char value, i.e., two halves of the password:
  
