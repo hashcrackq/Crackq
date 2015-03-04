@@ -28,6 +28,7 @@ def usage(argv0):
     print '%s [-q privq|pubq] [-t|--type] [md5|ntlm|lm|gpp|cisco_type7|wpa|md5crypt|descrypt] [hash|hccap]' % argv0
     print '-t --type        supported formats: md5, ntlm, lm, gpp, cisco_type7, wpa, md5crypt or descrypt'
     print '-q               queue type: pubq or privq' 
+    print '-u --update      update the client' 
     print '-h --help        help'
 
 def validate_hash(_hash, _hash_type):
@@ -98,7 +99,7 @@ if __name__ == '__main__':
     banner()
 
     try:
-        optlist, args = getopt.getopt(sys.argv[1:], 't:hq:', ['type=', 'help'])
+        optlist, args = getopt.getopt(sys.argv[1:], 't:huq:', ['type=', 'help', 'update'])
     except getopt.GetoptError as err:
         print str(err)
         usage(sys.argv[0])
@@ -107,7 +108,10 @@ if __name__ == '__main__':
     for o, a in optlist:
        if o in ('-h', '--help'):
            usage(sys.argv[0])
-           sys.exit()
+           sys.exit(0)
+       if o in ('-u', '--update'):
+           os.system('git pull')
+           sys.exit(0)
        if o in ('-t', '--type'):
            _type = a
        if o == '-q':

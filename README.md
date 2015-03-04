@@ -9,6 +9,8 @@ Currently, the following algorithms are supported:
 * LM
 * NTLM
 * WPA / WPA2
+* Cisco type 7
+* Windows Group Policy Preferences (GPP) cpassword
 * DESCRYPT / DES(Unix) 
 * MD5CRYPT / MD5(Unix) 
 
@@ -59,3 +61,17 @@ MD5CRYPT/MD5(Unix)
 MD5-based Unix crypt algorithm is supported by the private queue only:
 
 `$ ./crackqcli.py -q privq -t md5crypt '$1$abcdefgh$WSwV3CmjYt3iE5AlESn9Z.'`
+
+Cisco type 7/Windows Group Policy Preferences (GPP)
+-----------------------------------------------------
+
+These are encodings which are reversible. There is no processing time
+involved.
+
+To submit your Cisco type 7 hash:
+
+`$ ./crackqcli.py -t cisco_type7 your_cisco_type7_hash`
+
+To submit your Windows GPP (Group Policy Preferences) `cpassword` hash (found in Groups.xml):
+
+`$ ./crackqcli.py -t gpp your_cpassword_hash`
