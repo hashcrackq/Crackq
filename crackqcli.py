@@ -127,7 +127,7 @@ if __name__ == '__main__':
 
     # check for updates
     if urlopen(SERVER + ENDPOINTS['client_ver']).read() != MYVER:
-        sys.stdout.write('[-] WARNING: NEW CLIENT VERSION IS AVAILABLE. PLEASE UPDATE.')
+        sys.stdout.write('[-] WARNING: NEW CLIENT VERSION IS AVAILABLE. PLEASE UPDATE.\n')
         sys.exit(-1)
 
     if len(args) != 1:
