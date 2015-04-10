@@ -158,12 +158,11 @@ if __name__ == '__main__':
         sys.stdout.write('[+] Results will be emailed to: %s\n' % data['email'])
         sys.stdout.write('[+] Submissions left: %s\n' % data['privq_limit'])
 
+        if (data['privq_limit'] > 0):
+            sys.stdout.write('[+] Sending to the queue...\n')
         else:
-            if (data['privq_limit'] > 0):
-	        sys.stdout.write('[+] Sending to the queue...\n')
-            else:
-	        sys.stdout.write('[-] ERROR: NO QUEUE SUBMISSIONS LEFT. PURCHASE SUBMISSION QUOTA AT https://hashcrack.org/crackq_buy\n')
-                sys.exit(-1)
+	    sys.stdout.write('[-] ERROR: NO QUEUE SUBMISSIONS LEFT. PURCHASE SUBMISSION QUOTA AT https://hashcrack.org/crackq_buy\n')
+            sys.exit(-1)
 
         if _type == 'wpa' or _type == 'ike_md5':
             try:
