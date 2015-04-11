@@ -32,7 +32,7 @@ MD5/SHA1/NTLM
 
 SHA1 hashes are 40 hex characters:
 
-`$ ./crackqcli.py -q privq -t sha1 35029a2e592be14756b3bd91fbf873d9e2885713`
+`$ ./crackqcli.py -t sha1 35029a2e592be14756b3bd91fbf873d9e2885713`
 
 DESCRYPT/DES(Unix)
 ------------------
