@@ -1,7 +1,7 @@
 Crackq Client
 =============
 
-Login to your account (http://hashcrack.org/crackq) to get the API key.
+Login to your account (https://hashcrack.org/crackq) to get the API key.
 
 Currently, the following algorithms are supported:
 
@@ -11,6 +11,7 @@ Currently, the following algorithms are supported:
 * WPA / WPA2
 * DESCRYPT / DES(Unix) 
 * MD5CRYPT / MD5(Unix) 
+* IPSec IKE PSK (Aggressive Mode) MD5
 
 WPA/WPA2
 --------
@@ -22,6 +23,8 @@ To submit your your handshake:
 `$ aircrack-ng out.cap -J /tmp/tosubmit`
 
 `$ ./crackqcli.py -t wpa /tmp/tosubmit.hccap`
+
+Refer to (https://hashcrack.org/crackq/page?n=wpa) for details.
 
 MD5/SHA1/NTLM
 -------------
