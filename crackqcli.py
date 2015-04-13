@@ -91,9 +91,9 @@ def save_config():
     try:
         conf = open(CONFIG_PATH, 'w')
     except IOError:
-	sys.stdout.write('[-] ERROR: Cannot write to %s\n' % CONFIG_PATH)
+        sys.stdout.write('[-] ERROR: Cannot write to %s\n' % CONFIG_PATH)
         sys.exit(-1)
-        
+
     conf.write('key:%s\n' % key)
     API_KEY = key
 
