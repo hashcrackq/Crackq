@@ -19,11 +19,12 @@ ENDPOINTS = {
                 'client_ver' : '/crackq/v0.1/client_ver'
             }
 API_KEY = None
-MYVER = '0.2b'
-HASH_TYPES = ['wpa', 'descrypt', 'md5crypt', 'md5', 'ntlm', 'sha1', 'ike_md5']
+MYVER = '0.2.2'
+HASH_TYPES = ['wpa', 'descrypt', 'md5crypt', 'md5', 'ntlm', 'sha1', 'ike_md5', 'phpass']
 
 def banner():
-    sys.stdout.write('hashcrack.org crackq client %s\n\n' % MYVER)
+    sys.stdout.write('Crackq client %s\n' % MYVER)
+    sys.stdout.write('support@hashcrack.org\n\n')
 
 def usage(argv0):
     sys.stdout.write('%s [-t|--type hash_type] [hash|file_path]\n' % argv0)
@@ -37,6 +38,7 @@ def usage(argv0):
     sys.stdout.write('md5crypt         MD5CRYPT / FreeBSD MD5 / Cisco IOS MD5 / MD5(Unix)\n')
     sys.stdout.write('descrypt         DESCRYPT / DES(Unix)\n')
     sys.stdout.write('ike_md5          VPN IPSec IKE (MD5) preshared keys\n')
+    sys.stdout.write('phpass           phpass (Wordpress, Joomla and phpBB3)\n')
 
 def validate_hash(_hash, _hash_type):
     if _hash_type == 'descrypt':
@@ -44,6 +46,9 @@ def validate_hash(_hash, _hash_type):
            return False
     elif _hash_type == 'md5crypt':
        if re.match('^\$1\$[\./0-9A-Za-z]{0,8}\$[\./0-9A-Za-z]{22,22}$', _hash) is None:
+           return False
+    elif _hash_type == 'phpass':
+       if re.match('^\$[PH]\$[0-9A-Z][./0-9A-Za-z]{30,30}$', _hash) is None:
            return False
     elif _hash_type == 'sha1':
         if len(_hash) != 40:

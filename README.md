@@ -1,17 +1,27 @@
 Crackq Client
 =============
 
-Login to your account (https://hashcrack.org/crackq) to get the API key.
+Login to your account (https://hashcrack.org/crackq) to get the API key. Hash formats are 
+
+
+Installation
+-----------
+
+Refer to (https://hashcrack.org/crackq/page?n=install) for complete installation instructions for Windows, Linux and OS X.
+
+Hash Formats
+------------
 
 Currently, the following algorithms are supported:
 
+* NTLM
 * MD5
 * SHA1
-* NTLM
-* WPA / WPA2
-* DESCRYPT / DES(Unix) 
-* MD5CRYPT / MD5(Unix) 
-* IPSec IKE PSK (Aggressive Mode) MD5
+* WPA/WPA2 PSK
+* VPN IPSec IKE (aggressive mode) MD5
+* DESCRYPT / DES(Unix)
+* MD5CRYPT / FreeBSD MD5 / Cisco IOS MD5 / MD5(Unix)
+* PHPASS MD5 Wordpress, Joomla, phpBB3
 
 WPA/WPA2
 --------
@@ -29,9 +39,9 @@ Refer to (https://hashcrack.org/crackq/page?n=wpa) for details.
 MD5/SHA1/NTLM
 -------------
 
-`$ ./crackqcli.py -t md5 06aa3b7d55df43e7d7fa4aef94811e4a`
+`$ ./crackqcli.py -t md5 [hash]`
 
-`$ ./crackqcli.py -t ntlm ab54d7ae46a72b05388ec24611c96a2d`
+`$ ./crackqcli.py -t ntlm [hash]`
 
 SHA1 hashes are 40 hex characters:
 
@@ -40,7 +50,7 @@ SHA1 hashes are 40 hex characters:
 DESCRYPT/DES(Unix)
 ------------------
 
-`$ ./crackqcli.py -t descrypt ffTEQtUBN6Glk`
+`$ ./crackqcli.py -t descrypt [hash]`
 
 MD5CRYPT/MD5(Unix)
 ------------------
