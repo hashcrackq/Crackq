@@ -1,8 +1,7 @@
 Crackq Client
 =============
 
-Login to your account (https://hashcrack.org/crackq) to get the API key. Hash formats are 
-
+Login to your account (https://hashcrack.org/crackq) to get the API key.
 
 Installation
 -----------
