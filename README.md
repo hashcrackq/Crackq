@@ -33,7 +33,7 @@ Submitting Hashes
 Refer to our FAQ for detailed instructions on submitting hashes
 (https://hashcrack.org/crackq_faq).
 
-`
+```
 $ ./crackqcli.py -h
 Crackq client 0.3.1
 support@hashcrack.org
@@ -51,4 +51,4 @@ md5crypt         MD5CRYPT / FreeBSD MD5 / Cisco IOS MD5 / MD5(Unix)
 descrypt         DESCRYPT / DES(Unix)
 ike_md5          VPN IPSec IKE (MD5) preshared keys
 phpass           phpass (Wordpress, Joomla and phpBB3)
-`
+```
