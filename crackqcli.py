@@ -19,7 +19,7 @@ ENDPOINTS = {
                 'client_ver' : '/crackq/v0.1/client_ver'
             }
 API_KEY = None
-MYVER = '0.2.2'
+MYVER = '0.3.1'
 HASH_TYPES = ['wpa', 'descrypt', 'md5crypt', 'md5', 'ntlm', 'sha1', 'ike_md5', 'phpass']
 
 def banner():

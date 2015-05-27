@@ -1,12 +1,17 @@
 Crackq Client
 =============
 
+Crackq is an online distributed GPU-accelerated password cracker designed to
+help penetration testers and network auditors check for weak passwords. It
+supports a number of hash types and we are actively adding new algorithms.
+
 Login to your account (https://hashcrack.org/crackq) to get the API key.
 
 Installation
 -----------
 
-Refer to (https://hashcrack.org/crackq/page?n=install) for complete installation instructions for Windows, Linux and OS X.
+Refer to (https://hashcrack.org/crackq/page?n=install) for complete
+installation instructions for Windows, Linux and OS X.
 
 Hash Formats
 ------------
@@ -16,47 +21,34 @@ Currently, the following algorithms are supported:
 * NTLM
 * MD5
 * SHA1
-* WPA/WPA2 PSK
+* WPA / WPA2 PSK
 * VPN IPSec IKE (aggressive mode) MD5
-* DESCRYPT / DES(Unix)
-* MD5CRYPT / FreeBSD MD5 / Cisco IOS MD5 / MD5(Unix)
-* PHPASS MD5 Wordpress, Joomla, phpBB3
+* descrypt / DES(Unix)
+* md5crypt / FreeBSD MD5 / Cisco IOS MD5 / MD5(Unix)
+* PHPass MD5 (Wordpress, Joomla, phpBB3)
 
-WPA/WPA2
---------
+Submitting Hashes
+-----------------
 
-To submit your your handshake:
+Refer to our FAQ for detailed instructions on submitting hashes
+(https://hashcrack.org/crackq_faq).
 
-`$ wpaclean out.cap captured.cap`
+`
+$ ./crackqcli.py -h
+Crackq client 0.3.1
+support@hashcrack.org
 
-`$ aircrack-ng out.cap -J /tmp/tosubmit`
+./crackqcli.py [-t|--type hash_type] [hash|file_path]
+-t --type        see supported hash types below
+-h --help        help
 
-`$ ./crackqcli.py -t wpa /tmp/tosubmit.hccap`
-
-Refer to (https://hashcrack.org/crackq/page?n=wpa) for details.
-
-MD5/SHA1/NTLM
--------------
-
-`$ ./crackqcli.py -t md5 [hash]`
-
-`$ ./crackqcli.py -t ntlm [hash]`
-
-SHA1 hashes are 40 hex characters:
-
-`$ ./crackqcli.py -t sha1 35029a2e592be14756b3bd91fbf873d9e2885713`
-
-DESCRYPT/DES(Unix)
-------------------
-
-`$ ./crackqcli.py -t descrypt [hash]`
-
-MD5CRYPT/MD5(Unix)
-------------------
-
-`$ ./crackqcli.py -t md5crypt '$1$abcdefgh$WSwV3CmjYt3iE5AlESn9Z.'`
-
-IPSec IKE PSK
--------------
-
-Refer to (https://hashcrack.org/crackq/page?n=ike) for details.
+Supported hash types:
+md5              Unsalted MD5 hashes
+ntlm             Windows NTLM hashes
+sha1             Unsalted SHA1 hashes
+wpa              WPA/WPA2 handshakes
+md5crypt         MD5CRYPT / FreeBSD MD5 / Cisco IOS MD5 / MD5(Unix)
+descrypt         DESCRYPT / DES(Unix)
+ike_md5          VPN IPSec IKE (MD5) preshared keys
+phpass           phpass (Wordpress, Joomla and phpBB3)
+`
