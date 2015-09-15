@@ -18,6 +18,7 @@ Hash Formats
 
 Currently, the following algorithms are supported:
 
+* Password protected PDF files (v1.4 - v1.6)
 * NTLM
 * MD5
 * SHA1
@@ -32,23 +33,3 @@ Submitting Hashes
 
 Refer to our FAQ for detailed instructions on submitting hashes
 (https://hashcrack.org/crackq_faq).
-
-```
-$ ./crackqcli.py -h
-Crackq client 0.3.1
-support@hashcrack.org
-
-./crackqcli.py [-t|--type hash_type] [hash|file_path]
--t --type        see supported hash types below
--h --help        help
-
-Supported hash types:
-md5              Unsalted MD5 hashes
-ntlm             Windows NTLM hashes
-sha1             Unsalted SHA1 hashes
-wpa              WPA/WPA2 handshakes
-md5crypt         MD5CRYPT / FreeBSD MD5 / Cisco IOS MD5 / MD5(Unix)
-descrypt         DESCRYPT / DES(Unix)
-ike_md5          VPN IPSec IKE (MD5) preshared keys
-phpass           phpass (Wordpress, Joomla and phpBB3)
-```
