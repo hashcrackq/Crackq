@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 #
-# support@hashcrack.org
+# Hashcrack Crackq command line client
+#
+# Email: support[at]hashcrack.org
+# Web:   hashcrack.org
 
 import json
 import sys
@@ -10,8 +13,6 @@ import zlib
 import base64
 import re
 from urllib2 import Request, urlopen, URLError, HTTPError
-from thirdparty.termcolor import cprint
-from thirdparty.pdf2john import PdfParser
 
 SERVER = 'https://hashcrack.org'
 CONFIG_PATH = None
@@ -21,12 +22,20 @@ ENDPOINTS = {
                 'client_ver' : '/crackq/v0.1/client_ver'
             }
 API_KEY = None
-MYVER = '0.3.2'
-HASH_TYPES = ['wpa', 'descrypt', 'md5crypt', 'md5', 'ntlm', 'sha1', 'pdf', 'phpass']
+MYVER = '0.4'
+HASH_TYPES = ['wpa',
+              'descrypt',
+              'md5crypt',
+              'md5',
+              'ntlm',
+              'sha1',
+              'pdf',
+              'phpass',
+              'mysql']
 
 def banner():
-    cprint('Crackq client %s' % MYVER, 'green')
-    cprint('support@hashcrack.org\n', 'green')
+    sys.stdout.write('Crackq client %s\n' % MYVER)
+    sys.stdout.write('support@hashcrack.org\n\n')
 
 def usage(argv0):
     sys.stdout.write('%s [-t|--type hash_type] [hash|file_path]\n' % argv0)
@@ -40,7 +49,8 @@ def usage(argv0):
     sys.stdout.write('md5crypt         MD5CRYPT / FreeBSD MD5 / Cisco IOS MD5 / MD5(Unix)\n')
     sys.stdout.write('descrypt         DESCRYPT / DES(Unix)\n')
     sys.stdout.write('pdf              PDF 1.4 - 1.6\n')
-    sys.stdout.write('phpass           phpass (Wordpress, Joomla and phpBB3)\n')
+    sys.stdout.write('phpass           PHPASS (Wordpress, Joomla and phpBB3)\n')
+    sys.stdout.write('mysql            MYSQL4.1+ (double SHA1)\n')
 
 def validate_hash(_hash, _hash_type):
     if _hash_type == 'descrypt':
@@ -52,7 +62,10 @@ def validate_hash(_hash, _hash_type):
     elif _hash_type == 'phpass':
        if re.match('^\$[PH]\$[0-9A-Z][./0-9A-Za-z]{30,30}$', _hash) is None:
            return False
-    elif _hash_type == 'sha1':
+    elif _hash_type == 'pdf':
+       if re.match('^\$pdf\$[0-9A-Z][./0-9A-Za-z]{30,30}$', _hash) is None:
+           return False
+    elif _hash_type == 'sha1' or _hash_type == 'mysql':
         if len(_hash) != 40:
             sys.stdout.write('[-] ERROR: Invalid hash\n')
             return False
@@ -136,7 +149,7 @@ if __name__ == '__main__':
         # check for updates
         sys.stdout.write('[+] Checking the current client version...\n')
         if urlopen(SERVER + ENDPOINTS['client_ver']).read() != MYVER:
-            cprint('[-] WARNING: NEW CLIENT VERSION IS AVAILABLE. PLEASE UPDATE.', 'red')
+            sys.stdout.write('[-] WARNING: NEW CLIENT VERSION IS AVAILABLE: https://hashcrack.org/crackq/page?n=install#update\n')
             sys.exit(-1)
 
         if len(args) != 1:
@@ -174,7 +187,7 @@ if __name__ == '__main__':
 
         if _type == 'wpa':
             try:
-                f = open(_content, 'r')
+                f = open(_content, 'rb')
             except IOError:
                 sys.stdout.write('[-] ERROR: Cannot find %s\n' % _content)
                 sys.exit(-1)
@@ -187,20 +200,6 @@ if __name__ == '__main__':
             _content = base64.b64encode(zlib.compress(_raw))
             f.close()
 
-        if _type == 'pdf':
-            parser = PdfParser(_content) 
-            
-            if not parser.supported():
-                print 'This PDF format is not supported'
-                sys.exit(-1)
-            try: 
-                pdf_hash = parser.parse() 
-            except RuntimeError: 
-                e = sys.exc_info()[1] 
-                sys.stderr.write("%s : %s\n" % (filename, str(e))) 
-                sys.exit(-1)
-            _content = pdf_hash
-     
         data = {'key': API_KEY, 'content': _content, 'type': _type, 'q': 'privq'}
         req = Request(SERVER + ENDPOINTS['submit'])
         req.add_header('Content-Type', 'application/json')
@@ -210,5 +209,5 @@ if __name__ == '__main__':
         sys.stdout.write('[-] ERROR: HTTP %d - %s\n' % (e.code, json.load(e)['msg']))
         sys.exit(-1)
     except URLError as e:
-        cprint('[-] ERROR: UNREACHABLE - %s' % e.reason, 'red')
+        sys.stdout.write('[-] ERROR: UNREACHABLE - %s\n' % e.reason)
         sys.exit(-1)

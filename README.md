@@ -1,11 +1,11 @@
-Crackq Client
-=============
+Crackq Client - v0.4
+====================
 
 Crackq is an online distributed GPU-accelerated password cracker designed to
-help penetration testers and network auditors check for weak passwords. It
+help penetration testers and network auditors identify for weak passwords. It
 supports a number of hash types and we are actively adding new algorithms.
 
-Login to your account (https://hashcrack.org/crackq) to get the API key.
+Log in to your account (https://hashcrack.org/crackq) to get your API key.
 
 Installation
 -----------
@@ -27,6 +27,7 @@ Currently, the following algorithms are supported:
 * descrypt / DES(Unix)
 * md5crypt / FreeBSD MD5 / Cisco IOS MD5 / MD5(Unix)
 * PHPass MD5 (Wordpress, Joomla, phpBB3)
+* MYSQL 4.1+ (double SHA1)
 
 Submitting Hashes
 -----------------

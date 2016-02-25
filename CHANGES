@@ -1,0 +1,4 @@
+v0.4
+- Added MYSQL support for v4.1+ hashes (double SHA1 hashes) - 40 hex characters
+- Removed third-party modules
+- Fixed the WPA handshake file opening mode on non-posix systems
